@@ -1,3 +1,0 @@
-mango|2500|sweet|2
-tomato|600|red|1
-cucumber|800|vegetable|1

@@ -1,4 +1,5 @@
 from product import ProductManager
+from log import Log, LogManager
 
 
 class PurchaseController:
@@ -9,69 +10,79 @@ class PurchaseController:
     def run(self):
         while True:
             self.view.show_purchase_controller()
-            number = input()
+            number = int(input())
+            if not 1 <= number <= 3:
+                self.view.show_wrong_value()
+                continue
 
-            if number == '1':
+            if number == 1:
                 self.buy()
-            elif number == '2':
+            elif number == 2:
                 self.add_product()
-            elif number == '3':
+            elif number == 3:
                 break
 
     def buy(self):
         total_price = 0
-        log = time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime(time.time())) + "|"
-        for idx in range(len(self.chosen_list)):
-            chosen_product = self.chosen_list[idx]
-            total_price += chosen_product[1] * self.product_list[chosen_product[0]].price
-            log += self.product_list[chosen_product[0]].name + "-" + str(chosen_product[1])
-            if idx != len(self.chosen_list) - 1:
-                log += ", "
+        for chosen_product in self.model.chosen_list:
+            product = self.model.product_manager.product_list[chosen_product[0]]
+            total_price += product.price * chosen_product[1]
 
+        self.view.show_total_price(total_price)
         money = int(input())
         if money < 0:
-            raise ValueError
+            self.view.show_wrong_value()
+            return
 
         if money < total_price:
-            print("금액이 부족합니다.")
-            continue
+            self.view.show_string("금액이 부족합니다.")
+            return
 
-        for idx in range(len(self.chosen_list)):
-            chosen_product = self.chosen_list[idx]
-            self.product_list[chosen_product[0]].stock -= chosen_product[1]
+        for chosen_product in self.model.chosen_list:
+            self.model.product_manager.product_list[chosen_product[0]].stock -= chosen_product[1]
 
-        write_product_file(self.product_list)
-        add_log_file(log)
-        self.chosen_list = []
+        self.model.chosen_list = []
+        self.view.show_finish_purchase()
 
-        print("결제가 완료되었습니다.")
-        print("거스름돈: " + str(money - total_price))
+        log_str = ""
+        for i in range(len(self.model.chosen_list)):
+            chosen_product = self.model.chosen_list[i]
+            log_str += chosen_product[0].name + "-" + chosen_product[1]
+            if i < len(self.model.chosen_list) - 1:
+                log_str += ", "
+        self.model.log_manager.add_log(Log(log_str))
 
     def add_product(self):
-        self.show_product_list()
+        self.view.show_products()
 
-        print("구입할 물건의 번호를 입력해 주세요: ")
-        product_number = int(input())
-        if product_number < 0 or product_number >= len(self.product_list):
-            raise ValueError
+        self.view.show_string("구입할 물건의 id를 입력해 주세요: ")
+        product_id = int(input())
+        if product_id < 0 or product_id >= len(self.model.product_list):
+            self.view.show_wrong_value()
+            return
 
-        print("구입할 개수를 입력해 주세요: ")
-        count = int(input())
-        if count > self.product_list[product_number].stock:
-            print("물건의 재고가 부족합니다.")
-            continue
-        if count <= 0:
-            raise ValueError
+        self.view.show_string("구입할 물건의 개수를 입력해 주세요: ")
+        number = int(input())
+
+        if number <= 0:
+            self.view.show_wrong_value()
+            return
+
+        if number > self.model.product_list[product_id].stock:
+            self.view.show_lack_stock()
+            return
 
         is_chosen = False
-        for idx in range(len(self.chosen_list)):
-            if self.chosen_list[idx][0] == product_number:
+        for i in range(len(self.model.chosen_list)):
+            chosen_product = self.model.chosen_list[i]
+            if chosen_product[0] == product_id:
                 is_chosen = True
-                if count + self.chosen_list[idx][1] > self.product_list[product_number].stock:
-                    print("물건의 재고가 부족합니다.")
+                if number + chosen_product[1] > self.model.product_list[product_id].stock:
+                    self.view.show_lack_stock()
+                    return
                 else:
-                    self.chosen_list[idx][1] += count
+                    chosen_product[1] += number
                 break
         if not is_chosen:
-            self.chosen_list += [[product_number, count]]
+            self.model.chosen_list += [[product_id, number]]
 

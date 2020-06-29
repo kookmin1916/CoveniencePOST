@@ -5,6 +5,17 @@ class ProductManager:
     def add_product(self, product):
         self.__product_list += [product]
 
+    def del_product(self, product_id):
+        del self.__product_list[product_id]
+        for i in range(len(self.__product_list)):
+            self.__product_list[i].id = i
+
+    def devise_product(self, product_id, product):
+        self.__product_list[product_id] = product
+
+    def get_new_id(self):
+        return len(self.__product_list)
+
     @staticmethod
     def __read_file():
         product_list = []
@@ -14,18 +25,20 @@ class ProductManager:
             open("product_list.txt", 'a').close()
             file = open("product_list.txt", 'r')
 
+        product_id = 0
         for line in file:
             information = line[:-1].split("|")
             if information[0] == "GeneralProduct":
-                product_list += [GeneralProduct(information[1], information[2], information[3], information[4])]
+                product_list += [GeneralProduct(product_id, information[1], information[2], information[3], information[4])]
             elif information[0] == "FoodProduct":
-                product_list += [FoodProduct(information[1], information[2],
+                product_list += [FoodProduct(product_id, information[1], information[2],
                                              information[3], information[4], information[5])]
             elif information[0] == "AgeRestrictedProduct":
-                product_list += [AgeRestrictedProduct(information[1], information[2],
+                product_list += [AgeRestrictedProduct(product_id, information[1], information[2],
                                                       information[3], information[4], information[5])]
             else:
                 raise
+            product_id += 1
 
         file.close()
         return product_list
@@ -46,16 +59,13 @@ class ProductManager:
 
 
 class Product:
-    product_id = 0
-
-    def __init__(self, name, price, explanation, stock):
-        self.__id = Product.product_id
+    def __init__(self, product_id, name, price, explanation, stock):
+        self.__id = product_id
         self.__name = name
         self.__price = price
         self.__explanation = explanation
         self.__stock = stock
         self.__type = "Product"
-        Product.product_id += 1
 
     def __str__(self):
         return "{" + self.get_information() + "}"
@@ -103,16 +113,20 @@ class Product:
     def id(self):
         return self.__id
 
+    @id.setter
+    def id(self, product_id):
+        self.__id = product_id
+
 
 class GeneralProduct(Product):
-    def __init__(self, name, price, explanation, stock):
-        super().__init__(name, price, explanation, stock)
+    def __init__(self, product_id, name, price, explanation, stock):
+        super().__init__(product_id, name, price, explanation, stock)
         self.__type = "GeneralProduct"
 
 
 class FoodProduct(Product):
-    def __init__(self, name, price, explanation, stock, best_before):
-        super().__init__(name, price, explanation, stock)
+    def __init__(self, product_id, name, price, explanation, stock, best_before):
+        super().__init__(product_id, name, price, explanation, stock)
         self.__best_before = best_before
         self.__type = "FoodProduct"
 
@@ -128,8 +142,8 @@ class FoodProduct(Product):
 
 
 class AgeRestrictedProduct(Product):
-    def __init__(self, name, price, explanation, stock, age_limit):
-        super().__init__(name, price, explanation, stock)
+    def __init__(self, product_id, name, price, explanation, stock, age_limit):
+        super().__init__(product_id, name, price, explanation, stock)
         self.__age_limit = age_limit
         self.__type = "AgeRestrictedProduct"
 

@@ -10,6 +10,9 @@ class LogManager:
         self.__log_list += [new_log]
         self.__file.write(new_log + '\n')
 
+    def del_log(self):
+        self.__log_list = []
+
     @staticmethod
     def __read_file():
         log_list = []

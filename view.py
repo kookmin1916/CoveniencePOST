@@ -15,9 +15,9 @@ class View:
 
     def show_chosen_products(self):
         print()
-        product_list = self.model.chosen_list
-        for product in product_list:
-            print(product.get_information())
+        chosen_list = self.model.chosen_list
+        for chosen_product in chosen_list:
+            print(chosen_product[0].name + ": " + chosen_product[1])
 
     def show_logs(self):
         print()
@@ -50,23 +50,40 @@ class View:
         print("거스름돈: " + str(change))
 
     @staticmethod
-    def show_add_product():
-        print()
-        print("구입할 물건의 id와 개수를 입력해 주세요: ")
-
-    @staticmethod
-    def show_lack():
+    def show_lack_stock():
         print()
         print("물건의 재고가 부족합니다.")
 
     @staticmethod
     def show_product_controller():
         print()
-        print("1: 물건 목록 보기, 2: 물건 수정, 3: 물건 삭제, 4: 물건 추가, 5: 종료")
+        print("1: 물건 목록 보기, 2: 물건 추가, 3: 물건 삭제, 4: 물건 수정, 5: 종료")
         print("숫자를 입력해 주세요: ")
 
     @staticmethod
+    def show_product_type():
+        print()
+        print("1: 일반 상품, 2: 음식물, 3: 연령제한 물품")
+        print("숫자를 입력해 주세요: ")
+
+    @staticmethod
+    def show_revise_type():
+        print()
+        print("1: 가격 수정, 2: 재고 수정")
+        print("숫자를 입력해 주세요: ")
+        
+    @staticmethod
     def show_log_controller():
         print()
-        print("1: 로그 보기, 2: 로그 삭제, 3: 종료")
+        print("1: 로그 보기, 2: 로그 전체 삭제, 3: 종료")
         print("숫자를 입력해 주세요: ")
+
+    @staticmethod
+    def show_wrong_value():
+        print()
+        print("옳바른 값을 입력해 주세요.")
+
+    @staticmethod
+    def show_string(string):
+        print()
+        print(string)
