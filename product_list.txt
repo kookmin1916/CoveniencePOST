@@ -1,0 +1,2 @@
+GeneralProduct|pen|300|ThisIsPen|5
+AgeRestrictedProduct|beer|2000|alcohol|0|19

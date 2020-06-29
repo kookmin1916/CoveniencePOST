@@ -17,7 +17,8 @@ class View:
         print()
         chosen_list = self.model.chosen_list
         for chosen_product in chosen_list:
-            print(chosen_product[0].name + ": " + chosen_product[1])
+            print(self.model.product_manager.product_list[chosen_product[0]].name
+                  + ": " + str(chosen_product[1]))
 
     def show_logs(self):
         print()

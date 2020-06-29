@@ -26,12 +26,6 @@ class ProductController:
                 break
 
     def add_product(self):
-        self.view.show_products()
-
-        product_number = self.input_product_id()
-        if product_number == -1:
-            return
-
         self.view.show_product_type()
         type_number = int(input())
         if not 1 <= type_number <= 3:
@@ -49,7 +43,7 @@ class ProductController:
             self.model.product_manager.add_product(FoodProduct(
                 new_id, name, int(price), explanation, int(stock), best_before))
         elif type_number == 3:
-            self.view.show_string("이름, 가격, 설명, 재고, 제한연령을 입력해 주세요: ")
+            self.view.show_string("이름, 가격, 설명, 재고, 제한 연령을 입력해 주세요: ")
             name, price, explanation, stock, age_limit = input().split(' ')
             self.model.product_manager.add_product(AgeRestrictedProduct(
                 new_id, name, int(price), explanation, int(stock), int(age_limit)))
@@ -59,7 +53,7 @@ class ProductController:
     def revise_product(self):
         self.view.show_products()
 
-        product_number = self.input_product_id()
+        product_number = self.__input_product_id()
         if product_number == -1:
             return
 
@@ -71,17 +65,19 @@ class ProductController:
 
         product = self.model.product_manager.product_list[product_number]
         if type_number == 1:
-            product.name = input()
+            self.view.show_string("가격을 입력해 주세요: ")
+            product.price = int(input())
         elif type_number == 2:
+            self.view.show_string("재고를 입력해 주세요: ")
             product.stock = int(input())
-        self.model.product_manager.devise_product(product_number, product)
+        self.model.product_manager.revise_product(product_number, product)
 
         self.view.show_string("수정이 완료되었습니다.")
 
     def del_product(self):
         self.view.show_products()
 
-        product_number = self.input_product_id()
+        product_number = self.__input_product_id()
         if product_number == -1:
             return
 
@@ -89,11 +85,11 @@ class ProductController:
 
         self.view.show_string("삭제가 완료되었습니다.")
 
-    def input_product_id(self):
-        self.view.show_string("물건의 id를 입력해 주세요")
+    def __input_product_id(self):
+        self.view.show_string("물건의 id를 입력해 주세요: ")
 
         product_number = int(input())
-        if product_number < 0 or product_number >= len(self.model.product_list):
+        if product_number < 0 or product_number >= self.model.product_manager.product_list_size():
             self.view.show_wrong_value()
             return -1
         return product_number

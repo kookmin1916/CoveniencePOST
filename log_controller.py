@@ -22,7 +22,8 @@ class LogController:
                 break
 
     def del_log(self):
-        self.model.view.show_string("정말 삭제하시겠습니까?(y/n): ")
+        self.view.show_string("정말 삭제하시겠습니까?(y/n): ")
         check = input()
         if check == 'y':
             self.model.log_manager.del_log()
+            self.view.show_string("삭제가 완료되었습니다.")

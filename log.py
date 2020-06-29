@@ -8,7 +8,6 @@ class LogManager:
 
     def add_log(self, new_log):
         self.__log_list += [new_log]
-        self.__file.write(new_log + '\n')
 
     def del_log(self):
         self.__log_list = []
@@ -33,12 +32,15 @@ class LogManager:
     def __write_file(log_list):
         file = open("log.txt", 'w')
         for log in log_list:
-            file.write(log.get_file_information())
+            file.write(log.get_file_information() + "\n")
         file.close()
 
     @property
     def log_list(self):
         return self.__log_list
+
+    def __del__(self):
+        self.__write_file(self.__log_list)
 
 
 class Log:
