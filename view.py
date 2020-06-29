@@ -38,6 +38,18 @@ class View:
         print("숫자를 입력해 주세요: ")
 
     @staticmethod
+    def show_total_price(total_price):
+        print()
+        print("총액: " + str(total_price))
+        print("받은 금액을 입력해 주세요: ")
+
+    @staticmethod
+    def show_finish_purchase(change):
+        print()
+        print("결제가 완료되었습니다.")
+        print("거스름돈: " + str(change))
+
+    @staticmethod
     def show_add_product():
         print()
         print("구입할 물건의 id와 개수를 입력해 주세요: ")
