@@ -1,7 +1,4 @@
-from abc import abstractmethod
-
-
-class ProductController:
+class ProductManager:
     def __init__(self):
         self.__product_list = self.__read_file()
 
@@ -18,8 +15,17 @@ class ProductController:
             file = open("product_list.txt", 'r')
 
         for line in file:
-            name, price, explanation, stock = line[:-1].split("|")
-            product_list += [Product(name, int(price), explanation, int(stock))]
+            information = line[:-1].split("|")
+            if information[0] == "GeneralProduct":
+                product_list += [GeneralProduct(information[1], information[2], information[3], information[4])]
+            elif information[0] == "FoodProduct":
+                product_list += [FoodProduct(information[1], information[2],
+                                             information[3], information[4], information[5])]
+            elif information[0] == "AgeRestrictedProduct":
+                product_list += [AgeRestrictedProduct(information[1], information[2],
+                                                      information[3], information[4], information[5])]
+            else:
+                raise
 
         file.close()
         return product_list
@@ -28,24 +34,38 @@ class ProductController:
     def __write_file(product_list):
         file = open("product_list.txt", 'w')
         for product in product_list:
-            file.write(product.name + '|' + str(product.price) + '|'
-                       + product.explanation + '|' + str(product.stock) + '\n')
+            file.write(product.get_file_information())
         file.close()
+
+    @property
+    def product_list(self):
+        return self.__product_list
 
     def __del__(self):
         self.__write_file(self.__product_list)
 
 
 class Product:
+    product_id = 0
+
     def __init__(self, name, price, explanation, stock):
+        self.__id = Product.product_id
         self.__name = name
         self.__price = price
         self.__explanation = explanation
         self.__stock = stock
+        self.__type = "Product"
+        Product.product_id += 1
 
     def __str__(self):
-        return "{name: %s, price: %d, explanation: %s, stock: %d}"\
-               % (self.__name, self.__price, self.__explanation, self.__stock)
+        return "{" + self.get_information() + "}"
+
+    def get_information(self):
+        return "id: %d, name: %s, price: %d, explanation: %s, stock: %d"\
+               % (self.__id, self.__name, self.__price, self.__explanation, self.__stock)
+
+    def get_file_information(self):
+        return self.__type + "|" + self.__name + "|" + self.__price + "|" + self.__explanation + "|" + self.__stock
 
     @property
     def name(self):
@@ -75,17 +95,50 @@ class Product:
             raise
         self.__stock = stock
 
+    @property
+    def type(self):
+        return self.__type
+
+    @property
+    def id(self):
+        return self.__id
+
 
 class GeneralProduct(Product):
     def __init__(self, name, price, explanation, stock):
         super().__init__(name, price, explanation, stock)
+        self.__type = "GeneralProduct"
 
 
 class FoodProduct(Product):
     def __init__(self, name, price, explanation, stock, best_before):
         super().__init__(name, price, explanation, stock)
         self.__best_before = best_before
+        self.__type = "FoodProduct"
+
+    def get_information(self):
+        return super().get_information() + ", best before: %s" % self.__best_before
+
+    def get_file_information(self):
+        return super().get_file_information() + "|" + self.__best_before
 
     @property
     def best_before(self):
         return self.__best_before
+
+
+class AgeRestrictedProduct(Product):
+    def __init__(self, name, price, explanation, stock, age_limit):
+        super().__init__(name, price, explanation, stock)
+        self.__age_limit = age_limit
+        self.__type = "AgeRestrictedProduct"
+
+    def get_information(self):
+        return super().get_information() + ", age limit: %d" % self.__age_limit
+
+    def get_file_information(self):
+        return super().get_file_information() + "|" + self.__age_limit
+
+    @property
+    def age_limit(self):
+        return self.__age_limit
